@@ -1,0 +1,16 @@
+{
+  "name": "employyes-viewer",
+  "version": "1.0.0",
+  "description": "App to view employees info",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon bin/www"
+},
+  "author": "Yaryna Shyika",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3"
+  }
+}
