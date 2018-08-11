@@ -1,21 +1,30 @@
 const {query} = require('./helpers');
 
-const fields = 'empID, empName, empActive, dpName';
-const joinedTables =
-    '(SELECT * FROM tblemployees ' +
-    'JOIN tbldepartments ' +
-    'WHERE tblemployees.emp_dpID=tbldepartments.dpID) AS totals';
+module.exports = {
+    selectAllEmployees,
+    selectSingleEmployee,
+    updateEmployee,
+    deleteEmployee,
+    searchByNameFit,
+    getRowsTotalNumber
+};
 
-function selectAllEmployees(){
-    const expr = `SELECT ${fields} FROM ${joinedTables}`;
+function selectAllEmployees(page, itemsPerPage){
+    const startWith = page * itemsPerPage;
+    const fitSelectedExpr =
+        `(SELECT * FROM tblemployees ORDER BY empName ` +
+        `LIMIT ${startWith},${itemsPerPage}) AS fitselected `;
+    const expr = joinDpTable(fitSelectedExpr);
+
     return query(expr);
 }
 
-function sellectSingleEmployee(id){
-    const expr =
-        `SELECT ${fields} `+
-        `FROM ${joinedTables} `+
-        `WHERE totals.empID=${id}`;
+function selectSingleEmployee(id){
+    const fitSelectedExpr =
+        `(SELECT * FROM tblemployees ` +
+        `WHERE empID=${id}) AS fitselected`;
+    const expr = joinDpTable(fitSelectedExpr);
+
     return query(expr);
 }
 
@@ -26,9 +35,13 @@ async function updateEmployee(id, newData){
         `SET empName='${newData.empName}', empActive=${newData.empActive}, emp_dpID=${dpID} ` +
         `WHERE empID=${id}`;
 
-    await query(expr);
+    try{
+        await query(expr);
+    }catch(err){
+        throw err;
+    }
 
-    return sellectSingleEmployee(id);
+    return selectSingleEmployee(id);
 }
 
 function deleteEmployee(id){
@@ -38,28 +51,38 @@ function deleteEmployee(id){
     return query(expr);
 }
 
-function searchByNameFit(nameFit){
-    const expr =
-        `SELECT ${fields} FROM ` +
+function searchByNameFit(nameFit, page, itemsPerPage){
+    const startWith = page * itemsPerPage;
+    const fitSelectedExpr =
+        '(SELECT * FROM ' +
             '(SELECT * FROM tblemployees ' +
-            `WHERE tblemployees.empName LIKE '${nameFit}%') AS fitselected ` +
-        'JOIN tbldepartments ' +
-        'WHERE fitselected.emp_dpID=tbldepartments.dpID';
-        
+            `WHERE tblemployees.empName LIKE '${nameFit}%' ) AS allfits ` +
+        `ORDER BY allfits.empName LIMIT ${startWith},${itemsPerPage}) AS fitselected `;
+
+    const expr = joinDpTable(fitSelectedExpr);
+
+    return query(expr);
+}
+
+function getRowsTotalNumber(){
+    const expr = 'SELECT COUNT(empID) AS totalNumber FROM tblemployees';
 
     return query(expr);
 }
 
 async function getDpIdWithDpName(name){
-    const dpObj = await query(`SELECT dpID FROM tbldepartments WHERE dpName='${name}'`);
-
-    return dpObj[0].dpID;
+    try{
+        const dpObj = await query(`SELECT dpID FROM tbldepartments WHERE dpName='${name}'`);
+        return dpObj[0].dpID;
+    }catch(err){
+        throw err;
+    }
 }
 
-module.exports = {
-    selectAllEmployees,
-    sellectSingleEmployee,
-    updateEmployee,
-    deleteEmployee,
-    searchByNameFit
-};
+function joinDpTable (fitSelected){
+    const fields = 'empID, empName, empActive, dpName';
+
+    return `SELECT ${fields} FROM ${fitSelected} ` +
+        'JOIN tbldepartments ' +
+        'WHERE fitselected.emp_dpID=tbldepartments.dpID';
+}
