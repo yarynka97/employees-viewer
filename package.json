@@ -4,7 +4,7 @@
   "description": "App to view employees info",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon bin/www"
+    "start": "node bin/www"
   },
   "author": "Yaryna Shyika",
   "license": "ISC",

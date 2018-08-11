@@ -1,9 +1,9 @@
 const dbOptions = {
-    host:      'localhost',
-    user:       'root',
-    password: 'root',
-    port:       3306,
-    database:       'employeeslist'
+    host:      'host-url',
+    user:       'users-name',
+    password: 'users-password',
+    port:       'some-port',
+    database:       'employeeslist' //don't change
 };
 
 module.exports = {
