@@ -1,0 +1,49 @@
+table {
+    font-family: arial, sans-serif;
+    font-size: 14px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+input, select{
+    display: inline-block;
+    font-size: 18px;
+}
+button{
+    font-size: 20px;
+}
+
+.button{
+    color: blue;
+    padding: 3px;
+    cursor: pointer;
+}
+
+.button:hover{
+    color: darkblue;
+    text-decoration: underline;
+}
+
+.navigation{
+    margin: 15px 0;
+    font-size: 18px;
+}
+
+.view-employee, .edit-employee{
+    font-size: 20px
+}
+
+.title{
+    font-weight: bold;
+    display: inline;
+}
