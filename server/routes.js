@@ -2,7 +2,7 @@ const router = require('express').Router();
 const queries = require('./db/queries');
 
 router.get('/all', async (req, res) => {
-    const page = req.query.page || 0;
+    const page = req.query.page || 1;
 
     try{
         const employees = await queries.selectAllEmployees(page, 10);
@@ -14,7 +14,7 @@ router.get('/all', async (req, res) => {
 
 router.get('/all/find/:name', async (req, res) => {
     const employeeNameFit = req.params.name;
-    const page = req.query.page || 0;
+    const page = req.query.page || 1;
 
     try{
         const results = await queries.searchByNameFit(employeeNameFit, page, 10);
@@ -33,6 +33,27 @@ router.get('/all/number', async (req, res) => {
     }
 });
 
+router.get('/all/find/:name/number', async (req, res) => {
+    const employeeNameFit = req.params.name;
+
+    try{
+        const total = await queries.getSearchRowsTotalNumber(employeeNameFit);
+        res.send(total);
+    }catch(err){
+        console.log(err);
+        res.status(500).send(`Couldn't get total number`);
+    }
+});
+
+router.get('/departments', async (req, res) => {
+    try{
+        const departments = await queries.getdepartmentsList();
+        res.send(departments);
+    }catch(err){
+        res.status(500).send(`Some mistake with getting departments list`);
+    }
+});
+
 router.get('/:id', async (req, res) => {
     const employeeId = req.params.id;
 
@@ -46,14 +67,14 @@ router.get('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const employeeId = req.params.id;
+    const page = req.query.page || 1;
 
     try{
-        await queries.deleteEmployee(employeeId);
+        const updatesEmployees = await queries.deleteEmployee(employeeId, page, 10);
+        res.send(updatesEmployees);
     }catch(err){
         res.status(500).send(`Some mistake with deleting employee: ${employeeId}, check if your request was correct`);
     }
-
-    res.send(`Employee ${employeeId} successfully deleted`);
 });
 
 router.patch('/:id', async (req, res) => {

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Employees List</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    </head>
+    <body ng-app="employeesList" ng-controller="employeesListCtrl">
+        <div>
+            <span class="button" ng-repeat="i in pages" ng-click="changePage($event)">{{i+1}}</span>
+            <span class="button" ng-click="changeView('searching')">Search</span>
+        </div>
+        <table>
+            <tr>
+                <th>View</th>
+                <th>Edit</th>
+                <th>empID</th>
+                <th>empName</th>
+                <th>empActive</th>
+                <th>empDepartment</th>
+                <th>Delete</th>
+            </tr>
+            <tr ng-repeat="employee in employees">
+                <td class="button" ng-click="viewEmployee($event)">View</td>
+                <td class="button" ng-click="editEmployee($event)">Edit</td>
+                <td>{{employee.empID}}</td>
+                <td>{{employee.empName}}</td>
+                <td>{{employee.empActive==1 ? 'true' : 'false'}}</td>
+                <td>{{employee.dpName}}</td>
+                <td class="button" ng-click="deleteEmployee($event)">Delete</td>
+            </tr>
+        </table>
+
+        <div class="view-employee" ng-show="viewingEmployeeInfo">
+            <p>Name: {{singleEmployee.empName}}</p>
+            <p>Is Active: {{singleEmployee.empActive==1 ? 'true' : 'false'}}</p>
+            <p>Department: {{singleEmployee.dpName}}</p>
+        </div>
+
+        <div class="edit-employee" ng-show="editingEmployeeInfo">
+            <p>Name: </p><input type="text" ng-model="singleEmployee.empName"/>
+            <p>Is Active: </p>
+            <select ng-model="singleEmployee.empActive">
+                <option val="1">true</option>
+                <option val="0">false</option>
+            </select>
+            <p>Department: </p><select ng-model="singleEmployee.dpName" ng-options="dep.dpName as dep.dpName for dep in depsList track by dep.dpName"></select>
+            <button ng-click="updateEmployee()">Save</button>
+            <button ng-click="cancelChanges()">Cancel</button>
+        </div>
+
+        <div class="search-employees" ng-show="searchingEmployees">
+            <input type="text"/>
+            <button ng-click="search($event)">Search</button>
+        </div>
+
+        <script src="src/app.js"></script>
+    </body>
+</html>

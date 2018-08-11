@@ -14,4 +14,5 @@ CREATE TABLE IF NOT EXISTS tblEmployees (
 );
 
 ALTER TABLE tblEmployees ADD INDEX empName(empName);
+ALTER TABLE tblDepartments ADD INDEX dpName(dpName);
 

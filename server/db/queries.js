@@ -6,11 +6,13 @@ module.exports = {
     updateEmployee,
     deleteEmployee,
     searchByNameFit,
-    getRowsTotalNumber
+    getRowsTotalNumber,
+    getSearchRowsTotalNumber,
+    getdepartmentsList
 };
 
 function selectAllEmployees(page, itemsPerPage){
-    const startWith = page * itemsPerPage;
+    const startWith = (page - 1) * itemsPerPage;
     const fitSelectedExpr =
         `(SELECT * FROM tblemployees ORDER BY empName ` +
         `LIMIT ${startWith},${itemsPerPage}) AS fitselected `;
@@ -44,15 +46,22 @@ async function updateEmployee(id, newData){
     return selectSingleEmployee(id);
 }
 
-function deleteEmployee(id){
+async function deleteEmployee(id, page, itemsPerPage){
     const expr =
         'DELETE FROM tblemployees ' +
         `WHERE empID=${id}`;
-    return query(expr);
+
+    try{
+        await query(expr);
+    }catch(err){
+        throw err;
+    }
+
+    return selectAllEmployees(page, itemsPerPage);
 }
 
 function searchByNameFit(nameFit, page, itemsPerPage){
-    const startWith = page * itemsPerPage;
+    const startWith = (page - 1) * itemsPerPage;
     const fitSelectedExpr =
         '(SELECT * FROM ' +
             '(SELECT * FROM tblemployees ' +
@@ -66,6 +75,20 @@ function searchByNameFit(nameFit, page, itemsPerPage){
 
 function getRowsTotalNumber(){
     const expr = 'SELECT COUNT(empID) AS totalNumber FROM tblemployees';
+
+    return query(expr);
+}
+
+function getSearchRowsTotalNumber(nameFit){
+    const expr =
+        'SELECT COUNT(empID) AS totalNumber FROM tblemployees ' +
+        `WHERE empName LIKE '${nameFit}%'`;
+
+    return query(expr);
+}
+
+function getdepartmentsList(){
+    const expr = 'SELECT * FROM tbldepartments';
 
     return query(expr);
 }
